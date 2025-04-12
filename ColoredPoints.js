@@ -55,11 +55,28 @@ function connectVariablesToGLSL() {
   }
 }
 
+let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
+
+// Set up actions for the HTML UI elements
+function addActionsForHtmlUI() {
+  // Button Events (Shape Type)
+  document.getElementById('green').onclick = function() {g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
+  document.getElementById('red').onclick = function() {g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
+
+  // Slider Events
+  document.getElementById("redSlide").addEventListener("mouseup", function () { g_selectedColor[0] = this.value / 100; });
+  document.getElementById("greenSlide").addEventListener("mouseup", function () { g_selectedColor[1] = this.value / 100; });
+  document.getElementById("blueSlide").addEventListener("mouseup", function () { g_selectedColor[2] = this.value / 100; });
+}
+
 function main() {
   // Set up canvas and gl variables
   setupWebGL();
   // Set up GLSL shader programs and connect GLSL variables
   connectVariablesToGLSL();
+
+  // Set up actions for the HTML UI elements
+  addActionsForHtmlUI();
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click ;
@@ -81,14 +98,8 @@ function click(ev) {
   // Store the coordinates to g_points array
   g_points.push([x, y]);
 
-  // Store the coordinates to g_points array
-  if (x >= 0.0 && y >= 0.0) {      // First quadrant
-    g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
-  } else if (x < 0.0 && y < 0.0) { // Third quadrant
-    g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
-  } else {                         // Others
-    g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
-  }
+  // Store the color to g_colors array
+  g_colors.push(g_selectedColor.slice());
 
   // Draw every shape that is supposed to be in the canvas
   renderAllShapes();
@@ -100,8 +111,8 @@ function convertCoordinatesEventToGL(ev) {
   var y = ev.clientY; // y coordinate of a mouse pointer
   var rect = ev.target.getBoundingClientRect();
 
-  x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
-  y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+  x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
+  y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
 
   return([x, y]);
 }
