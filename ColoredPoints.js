@@ -56,7 +56,9 @@ function connectVariablesToGLSL() {
 }
 
 function main() {
+  // Set up canvas and gl variables
   setupWebGL();
+  // Set up GLSL shader programs and connect GLSL variables
   connectVariablesToGLSL();
 
   // Register function (event handler) to be called on a mouse press
