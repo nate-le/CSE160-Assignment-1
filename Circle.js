@@ -1,6 +1,6 @@
 class Circle {
     constructor() {
-        this.type = "circle";
+        this.type = 'circle';
         this.position = [0.0, 0.0, 0.0];
         this.color = [1.0, 1.0, 1.0, 1.0];
         this.size = 5.0;
