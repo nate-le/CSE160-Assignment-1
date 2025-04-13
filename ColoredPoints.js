@@ -27,7 +27,7 @@ let a_Position;
 let u_FragColor;
 let u_Size;
 // Globals related UI elements
-let g_selectedColor = [1.0, 1.0, 1.0, 1.0];
+let g_selectedColor = [1.0, 1.0, 1.0, 0.5];
 let g_selectedSize = 5;
 let g_selectedType = POINT;
 let g_selectedSegments = 10;
@@ -78,8 +78,8 @@ function connectVariablesToGLSL() {
 // Set up actions for the HTML UI elements
 function addActionsForHtmlUI() {
   // Button Events (Shape Type)
-  document.getElementById('green').onclick = function() {g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
-  document.getElementById('red').onclick = function() {g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
+  document.getElementById('green').onclick = function() {g_selectedColor = [0.0, 1.0, 0.0, 0.5]; };
+  document.getElementById('red').onclick = function() {g_selectedColor = [1.0, 0.0, 0.0, 0.5]; };
   document.getElementById("clearButton").onclick = function() { g_shapesList = []; renderAllShapes(); };
 
   document.getElementById("pointButton").onclick = function() { g_selectedType = POINT };
@@ -96,6 +96,8 @@ function addActionsForHtmlUI() {
 
   // Segment Slider Event
   document.getElementById("segmentSlide").addEventListener("mouseup", function () { g_selectedSegments = this.value; });
+
+  document.getElementById("example-drawing").addEventListener("mouseup", function () { generateExample(); });
 }
 
 function main() {
@@ -110,6 +112,10 @@ function main() {
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click;
   canvas.onmousemove = function(ev) { if (ev.buttons == 1) { click(ev); }};
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -178,4 +184,44 @@ function sendTextToHTML(text, htmlID) {
     return;
   }
   htmlElm.innerHTML = text;
+}
+
+// Triangle vertices list for Pokeball drawing
+const drawing = [
+  // Top
+  { vertices: [-0.15, 0.5, 0.15, 0.5, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  { vertices: [-0.4, 0.35, -0.15, 0.5, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  { vertices: [-0.5, 0.1, -0.4, 0.35, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  { vertices: [-0.5, 0.0, -0.5, 0.1, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  { vertices: [0.15, 0.5, 0.4, 0.35, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  { vertices: [0.4, 0.35, 0.5, 0.1, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  { vertices: [0.5, 0.1, 0.5, 0.0, 0.0, 0.0], color: [1.0, 0.0, 0.0, 1.0] },
+  // Bottom
+  { vertices: [0.15, -0.5, -0.15, -0.5, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [0.4, -0.35, 0.15, -0.5, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [0.5, -0.1, 0.4, -0.35, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [0.5, 0.0, 0.5, -0.1, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [-0.15, -0.5, -0.4, -0.35, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [-0.4, -0.35, -0.5, -0.1, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [-0.5, -0.1, -0.5, 0.0, 0.0, 0.0], color: [1.0, 1.0, 1.0, 1.0] },
+  // Middle
+  { vertices: [-0.12, -0.12, -0.12, 0.12, 0.12, 0.12], color: [0.0, 0.0, 0.0, 1.0] },
+  { vertices: [0.12, 0.12, 0.12, -0.12, -0.12, -0.12], color: [0.0, 0.0, 0.0, 1.0] },
+  { vertices: [-0.09, -0.09, -0.09, 0.09, 0.09, 0.09], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [0.09, 0.09, 0.09, -0.09, -0.09, -0.09], color: [1.0, 1.0, 1.0, 1.0] },
+  { vertices: [-0.5, -0.016, -0.5, 0.016, -0.09, 0.016], color: [0.0, 0.0, 0.0, 1.0] },
+  { vertices: [-0.09, -0.016, -0.09, 0.016, -0.5, -0.016], color: [0.0, 0.0, 0.0, 1.0] },
+  { vertices: [0.5, 0.016, 0.5, -0.016, 0.09, -0.016], color: [0.0, 0.0, 0.0, 1.0] },
+  { vertices: [0.09, 0.016, 0.09, -0.016, 0.5, 0.016], color: [0.0, 0.0, 0.0, 1.0] },
+]
+
+function generateExample() {
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  for (var i = 0; i < drawing.length; i += 1) {
+    // Set triangle color
+    var rgba = drawing[i].color;
+    gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+    drawTriangle(drawing[i].vertices);
+  }
 }
